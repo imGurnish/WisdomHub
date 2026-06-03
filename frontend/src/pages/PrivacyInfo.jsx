@@ -1,7 +1,7 @@
 // PrivacyPolicy.js
 import React from 'react';
 
-const PrivacyPolicy = () => {
+const PrivacyInfo = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-8">
@@ -69,4 +69,4 @@ const PrivacyPolicy = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default PrivacyInfo;

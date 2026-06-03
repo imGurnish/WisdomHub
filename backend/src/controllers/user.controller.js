@@ -89,19 +89,24 @@ const verifyUser = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-  const { fullName, role, institute } = req.body;
-  const avatarLocalPath = req.files?.avatar[0]?.path;
+  const { fullName, role, institute, email, username } = req.body;
+  const avatarLocalPath = req.files?.avatar ? (req.files.avatar[0] ? req.files.avatar[0].path : null) : null;
   console.log(avatarLocalPath);
   console.log(fullName, email, username, role, institute);
   // Check if any required fields are empty
   if (
     [fullName, email, username, institute, role].some(
-      (field) => field.trim() === ""
+      (field) => !field || field.trim() === ""
     )
   ) {
     throw new ApiError(400, "Please fill all fields");
   }
   try {
+    const user = await User.findOne({ uid: req.user.uid });
+    if (!user) {
+      throw new ApiError(400, "User Data not found");
+    }
+
     // Upload avatar to Cloudinary if an avatar file is provided
     if (avatarLocalPath) {
       const avatar = await uploadOnCloudinary(avatarLocalPath);
@@ -109,30 +114,15 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while uploading avatar");
       }
 
-      const user = await User.findOne({ uid: req.user.uid });
-      if (!user) {
-        throw new ApiError(400, "User Data not found");
-      }
-
       // Update user's avatar URL in the database
-      await User.findByIdAndUpdate(
-        user._id,
-        { $set: { avatar: avatar.secure_url } },
-        { new: true }
-      );
+      user.avatar = avatar.secure_url;
     }
     // Update user's details in the database
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user._id,
-      {
-        $set: {
-          fullName,
-          role,
-          institute,
-        },
-      },
-      { new: true }
-    );
+    user.fullName = fullName;
+    user.role = role;
+    user.institute = institute;
+    
+    const updatedUser = await user.save();
     // Respond with the updated user object and success message
     return res
       .status(200)
@@ -140,7 +130,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   } catch (error) {
     // Handle any errors that occur during avatar upload or database update
     console.error("Error updating account details:", error.message);
-    throw new ApiError(500, "Failed to update account details");
+    throw new ApiError(500, error.message || "Failed to update account details");
   }
 });
 

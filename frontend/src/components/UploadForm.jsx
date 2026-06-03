@@ -96,14 +96,10 @@ const Modal = ({ modalOpen = false, setModalOpen }) => {
 
       const data = await response.json();
       setLoading(false);
-      store.addMessage({ type: "Success", content: data.message });
       if (!response.ok) {
-        store.addMessage({
-          type: "Danger",
-          content: "Network response was not ok",
-        });
-        throw new Error("Network response was not ok");
+        throw new Error(data.message || "Network response was not ok");
       }
+      store.addMessage({ type: "Success", content: data.message });
       handleClose();
     } catch (error) {
       setLoading(false);

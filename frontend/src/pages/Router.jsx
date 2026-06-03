@@ -5,7 +5,7 @@ import Dashboard from "./Dashboard";
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import ProfilePage from "../pages/ProfilePage";
-import PrivacyPolicy from "../pages/PrivacyPolicy";
+import PrivacyInfo from "../pages/PrivacyInfo";
 import TermsAndConditions from "../pages/TermsandConditions";
 import ProtectedRoute from "../components/ProtectedRoute";
 import QuestionPapers from "./QuestionPapers";
@@ -77,7 +77,7 @@ const AppRouter = () => {
         }
       />
 
-      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/privacy-policy" element={<PrivacyInfo />} />
       <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
     </Routes>
   );
